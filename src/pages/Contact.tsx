@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { useSEO } from "@/hooks/useSEO";
+import { submitContactForm } from "@/services/contact.service";
 
 const schema = z.object({
   name: z.string().min(2, "Informe seu nome"),
@@ -31,10 +32,13 @@ export default function Contact() {
   });
 
   const onSubmit = async (data: FormData) => {
-    await new Promise((r) => setTimeout(r, 700)); // TODO: integrar com API.
-    console.log("Contato enviado:", data);
-    toast("Mensagem enviada! Responderemos em breve.");
-    reset();
+    try {
+      await submitContactForm(data);
+      toast("Mensagem enviada! Responderemos em breve.");
+      reset();
+    } catch {
+      toast("Não foi possível enviar sua mensagem. Tente novamente.", "info");
+    }
   };
 
   const Field = ({

@@ -1,21 +1,17 @@
+import { createClient } from "@supabase/supabase-js";
+
+const url = import.meta.env.VITE_SUPABASE_URL;
+const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+export const isSupabaseEnabled = Boolean(url && publishableKey);
+
 /**
- * Cliente Supabase — preparado, porém inativo por padrão.
+ * Cliente Supabase para o navegador. Usa a chave "publishable"/anon —
+ * segura para expor no cliente desde que cada tabela tenha Row Level
+ * Security (RLS) configurado corretamente (ver policies no Supabase).
  *
- * Para ativar:
- *   1. npm install @supabase/supabase-js
- *   2. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env
- *   3. Descomente o bloco abaixo.
+ * Sem autenticação de usuário por enquanto: este client é usado apenas
+ * para operações públicas explicitamente liberadas via RLS (ex.: inserir
+ * uma mensagem de contato).
  */
-
-// import { createClient } from "@supabase/supabase-js";
-//
-// export const supabase = createClient(
-//   import.meta.env.VITE_SUPABASE_URL,
-//   import.meta.env.VITE_SUPABASE_ANON_KEY,
-// );
-
-export const isSupabaseEnabled = Boolean(
-  import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY,
-);
-
-export const supabase = null;
+export const supabase = isSupabaseEnabled ? createClient(url, publishableKey) : null;

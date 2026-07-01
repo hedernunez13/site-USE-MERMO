@@ -153,11 +153,25 @@ automaticamente no slider da home, no mega menu e nos filtros.
 Toda comunicação externa fica isolada em `src/services`. Variáveis de ambiente
 em **`.env`** (veja `.env.example`).
 
-### Supabase
-1. `npm install @supabase/supabase-js`
-2. Defina `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` no `.env`.
-3. Descomente o cliente em `src/services/supabase.ts`.
-4. Substitua os mocks em `*.service.ts` por queries reais.
+### Supabase (já conectado)
+O projeto já está integrado ao Supabase — banco real, sem autenticação de
+usuário por enquanto (qualquer visitante pode enviar o formulário de contato).
+
+- Cliente em `src/services/supabase.ts`, usando `VITE_SUPABASE_URL` e
+  `VITE_SUPABASE_PUBLISHABLE_KEY` (`.env`, nunca versionado).
+- Tabela `contact_messages` (colunas: `name`, `email`, `phone`, `message`,
+  `created_at`) com **Row Level Security** habilitado: apenas `INSERT` é
+  permitido para o papel `anon` — ninguém consegue ler, editar ou apagar
+  mensagens pelo client. Leitura das mensagens é feita direto pelo
+  [painel do Supabase](https://supabase.com/dashboard/project/szhffufaqyvaawenihee/editor)
+  ou futuramente pelo painel admin usando a `service_role` key (nunca no
+  cliente).
+- `src/services/contact.service.ts` expõe `submitContactForm()`, usado em
+  `src/pages/Contact.tsx`.
+- Para novas tabelas/recursos dinâmicos (produtos, pedidos, avaliações),
+  siga o mesmo padrão: crie a tabela com RLS explícito e um `*.service.ts`
+  correspondente — os mocks em `/src/data` continuam servindo de fallback
+  enquanto o restante do catálogo não for migrado.
 
 ### Pagamentos (Stripe · Mercado Pago · PagSeguro)
 - Implemente em `src/services/payments.service.ts`.
