@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { MermoMark } from "@/components/ui/Logo";
 
 // Code splitting por rota
 const Home = lazy(() => import("@/pages/Home"));
@@ -20,11 +21,11 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 function PageLoader() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white">
-      <div className="flex flex-col items-center gap-4">
-        <span className="font-serif text-2xl tracking-[0.18em] text-ink">
+      <div className="flex flex-col items-center gap-5">
+        <MermoMark className="size-12 animate-pulse" />
+        <span className="font-sans text-lg font-light uppercase tracking-[0.32em] text-ink">
           USE MERMO
         </span>
-        <span className="h-px w-16 animate-pulse bg-gold" />
       </div>
     </div>
   );

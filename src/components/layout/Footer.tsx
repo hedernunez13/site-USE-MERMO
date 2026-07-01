@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Phone } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 
 const columns = [
   {
@@ -37,9 +38,7 @@ export function Footer() {
     <footer className="border-t border-border bg-offwhite">
       <div className="container-mermo grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <p className="font-serif text-2xl font-semibold tracking-[0.18em]">
-            USE MERMO
-          </p>
+          <Logo markClassName="size-8" wordmarkClassName="text-xl" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-gray-mid">
             Seu estilo. Sua visão. Use Mermo. Óculos premium brasileiros que unem
             moda, tecnologia, conforto e personalidade.

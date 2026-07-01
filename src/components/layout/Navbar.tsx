@@ -8,6 +8,7 @@ import { brands } from "@/data/brands";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { SearchModal } from "@/components/layout/SearchModal";
+import { Logo } from "@/components/ui/Logo";
 
 const navLinks = [
   { label: "Óculos de Grau", to: "/produtos?categoria=oculos-de-grau" },
@@ -107,12 +108,14 @@ export function Navbar() {
           {/* Logo central */}
           <Link
             to="/"
-            className={cn(
-              "absolute left-1/2 -translate-x-1/2 font-serif text-xl font-semibold tracking-[0.18em] transition-colors md:text-2xl",
-              solid ? "text-ink" : "text-white",
-            )}
+            aria-label="USE MERMO — início"
+            className="absolute left-1/2 -translate-x-1/2"
           >
-            USE MERMO
+            <Logo
+              tone={solid ? "dark" : "light"}
+              markClassName="size-7 md:size-8"
+              wordmarkClassName="transition-colors"
+            />
           </Link>
 
           {/* Direita */}
@@ -270,7 +273,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
             className="fixed inset-y-0 left-0 z-[70] flex w-[85%] max-w-sm flex-col bg-white lg:hidden"
           >
             <div className="flex items-center justify-between border-b border-border px-6 py-5">
-              <span className="font-serif text-lg tracking-[0.18em]">USE MERMO</span>
+              <Logo markClassName="size-6" wordmarkClassName="text-base tracking-[0.28em]" />
               <button onClick={onClose} aria-label="Fechar">
                 <X className="size-6" />
               </button>

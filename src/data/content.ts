@@ -160,18 +160,19 @@ export const getPostBySlug = (slug: string) =>
   blogPosts.find((p) => p.slug === slug);
 
 // ---------------- Instagram ----------------
+// Fotos reais dos produtos MERMO (em /public/images/produtos).
 export const instagramPosts: InstagramPost[] = [
-  "1483985988355-763728e1935b",
-  "1502767089025-6572583495c9",
-  "1473496169904-658ba7c44d8a",
-  "1508296695146-257a814070b4",
-  "1620231150904-a86b9802656a",
-  "1606760227091-3dd870d97f1d",
-].map((id, i) => ({
+  "redondo-tartaruga.jpg",
+  "aviador-amarelo.jpg",
+  "esportivo-verde.jpg",
+  "redondo-vermelho.jpg",
+  "wayfarer-fume.jpg",
+  "retangular-preto.jpg",
+].map((file, i) => ({
   id: `ig-${i}`,
-  image: square(id),
+  image: `/images/produtos/${file}`,
   likes: 320 + i * 47,
-  href: "https://instagram.com/usemermo",
+  href: "https://instagram.com/betomermo",
 }));
 
 // ---------------- FAQ ----------------

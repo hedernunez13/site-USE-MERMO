@@ -24,6 +24,12 @@ const config: Config = {
           DEFAULT: "#C4A76A",
           soft: "#D9C49A",
         },
+        // Laranja oficial da marca USE MERMO (logotipo)
+        mermo: {
+          DEFAULT: "#E94E2B",
+          soft: "#F26B4A",
+          dark: "#C63E20",
+        },
         cta: "#2E7D32",
         // shadcn tokens
         border: "hsl(var(--border))",
