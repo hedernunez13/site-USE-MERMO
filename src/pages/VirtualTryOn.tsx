@@ -27,16 +27,39 @@ export default function VirtualTryOn() {
   });
 
   const startWebcam = async () => {
+    if (!window.isSecureContext) {
+      alert(
+        "A câmera só funciona em conexões seguras (HTTPS). Acesse o site pelo domínio publicado (https://) ou por localhost para testar a webcam.",
+      );
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      alert("Seu navegador não tem suporte a acesso de câmera. Tente atualizá-lo ou use outro navegador.");
+      return;
+    }
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // facingMode "user" prioriza a câmera frontal — essencial em celulares,
+      // que por padrão podem abrir a câmera traseira.
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+      });
       setMode("webcam");
       setSelfie(null);
       requestAnimationFrame(() => {
         if (videoRef.current) videoRef.current.srcObject = stream;
       });
       // detectFaceAndPlaceOverlay(videoRef.current) — plugar IA aqui.
-    } catch {
-      alert("Não foi possível acessar a webcam. Verifique as permissões do navegador.");
+    } catch (err) {
+      const name = err instanceof DOMException ? err.name : "";
+      const messages: Record<string, string> = {
+        NotAllowedError:
+          "Permissão de câmera negada. Habilite o acesso à câmera nas configurações do navegador e tente novamente.",
+        NotFoundError: "Nenhuma câmera foi encontrada neste dispositivo.",
+        NotReadableError: "A câmera já está sendo usada por outro aplicativo.",
+        OverconstrainedError:
+          "Não foi possível encontrar uma câmera compatível. Tente enviar uma selfie.",
+      };
+      alert(messages[name] ?? "Não foi possível acessar a webcam. Verifique as permissões do navegador.");
     }
   };
 
