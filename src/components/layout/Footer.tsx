@@ -44,11 +44,21 @@ export function Footer() {
             moda, tecnologia, conforto e personalidade.
           </p>
           <div className="mt-6 flex gap-3">
-            {[Instagram, Facebook, Phone].map((Icon, i) => (
+            {[
+              { Icon: Instagram, href: "https://www.instagram.com/use.mermo/", label: "Instagram" },
+              { Icon: Facebook, href: "#", label: "Facebook" },
+              {
+                Icon: Phone,
+                href: "https://wa.me/5571986296933?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20USE%20MERMO",
+                label: "WhatsApp",
+              },
+            ].map(({ Icon, href, label }) => (
               <a
-                key={i}
-                href="#"
-                aria-label="Rede social"
+                key={label}
+                href={href}
+                target={href !== "#" ? "_blank" : undefined}
+                rel={href !== "#" ? "noopener noreferrer" : undefined}
+                aria-label={label}
                 className="flex size-10 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-ink hover:bg-ink hover:text-white"
               >
                 <Icon className="size-4" />

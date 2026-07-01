@@ -94,7 +94,7 @@ export default function Contact() {
             <div className="space-y-5">
               {[
                 { icon: MapPin, label: "Endereço", value: "Av. Tancredo Neves, 2227 — Salvador, BA" },
-                { icon: Phone, label: "Telefone / WhatsApp", value: "(71) 99999-9999" },
+                { icon: Phone, label: "Telefone / WhatsApp", value: "(71) 98629-6933" },
                 { icon: Mail, label: "E-mail", value: "contato@usemermo.com.br" },
                 { icon: Clock, label: "Atendimento", value: "Seg a Sex, 9h às 18h · Sáb, 9h às 13h" },
               ].map((item) => (
@@ -111,11 +111,16 @@ export default function Contact() {
             </div>
 
             <div className="mt-6 flex gap-3">
-              {[Instagram, Facebook].map((Icon, i) => (
+              {[
+                { Icon: Instagram, href: "https://www.instagram.com/use.mermo/", label: "Instagram" },
+                { Icon: Facebook, href: "#", label: "Facebook" },
+              ].map(({ Icon, href, label }) => (
                 <a
-                  key={i}
-                  href="#"
-                  aria-label="Rede social"
+                  key={label}
+                  href={href}
+                  target={href !== "#" ? "_blank" : undefined}
+                  rel={href !== "#" ? "noopener noreferrer" : undefined}
+                  aria-label={label}
                   className="flex size-11 items-center justify-center rounded-full border border-ink/15 transition-colors hover:bg-ink hover:text-white"
                 >
                   <Icon className="size-4" />

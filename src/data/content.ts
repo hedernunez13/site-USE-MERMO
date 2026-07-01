@@ -172,7 +172,7 @@ export const instagramPosts: InstagramPost[] = [
   id: `ig-${i}`,
   image: `/images/produtos/${file}`,
   likes: 320 + i * 47,
-  href: "https://instagram.com/betomermo",
+  href: "https://www.instagram.com/use.mermo/",
 }));
 
 // ---------------- FAQ ----------------

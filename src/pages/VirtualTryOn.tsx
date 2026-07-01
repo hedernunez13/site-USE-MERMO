@@ -1,10 +1,25 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Camera, ImageUp, ScanFace, ShoppingBag, X } from "lucide-react";
+import {
+  Camera,
+  ImageUp,
+  Minus,
+  Plus,
+  RotateCcw,
+  ScanFace,
+  ShoppingBag,
+  X,
+} from "lucide-react";
 import { products } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/useSEO";
 import { cn, formatBRL } from "@/lib/utils";
+
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 2;
+const SCALE_STEP = 0.1;
+const clampScale = (value: number) =>
+  Math.min(MAX_SCALE, Math.max(MIN_SCALE, Number(value.toFixed(2))));
 
 /**
  * Prova Virtual — arquitetura preparada para IA.
@@ -18,8 +33,31 @@ export default function VirtualTryOn() {
   const [mode, setMode] = useState<"idle" | "webcam" | "photo">("idle");
   const [selfie, setSelfie] = useState<string | null>(null);
   const [selected, setSelected] = useState(products[0]);
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const dragRef = useRef<{ x: number; y: number; offsetX: number; offsetY: number } | null>(null);
+
+  const resetAdjustment = () => {
+    setScale(1);
+    setOffset({ x: 0, y: 0 });
+  };
+
+  const handleOverlayPointerDown = (e: React.PointerEvent<HTMLImageElement>) => {
+    dragRef.current = { x: e.clientX, y: e.clientY, offsetX: offset.x, offsetY: offset.y };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handleOverlayPointerMove = (e: React.PointerEvent<HTMLImageElement>) => {
+    if (!dragRef.current) return;
+    const { x, y, offsetX, offsetY } = dragRef.current;
+    setOffset({ x: offsetX + (e.clientX - x), y: offsetY + (e.clientY - y) });
+  };
+
+  const handleOverlayPointerUp = () => {
+    dragRef.current = null;
+  };
 
   useSEO({
     title: "Prova Virtual — Experimente os óculos",
@@ -67,6 +105,7 @@ export default function VirtualTryOn() {
     const stream = videoRef.current?.srcObject as MediaStream | null;
     stream?.getTracks().forEach((t) => t.stop());
     setMode("idle");
+    resetAdjustment();
   };
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +113,7 @@ export default function VirtualTryOn() {
     if (file) {
       setSelfie(URL.createObjectURL(file));
       setMode("photo");
+      resetAdjustment();
     }
   };
 
@@ -139,7 +179,10 @@ export default function VirtualTryOn() {
               <>
                 <img src={selfie} alt="Sua selfie" className="size-full object-cover" />
                 <button
-                  onClick={() => setMode("idle")}
+                  onClick={() => {
+                    setMode("idle");
+                    resetAdjustment();
+                  }}
                   className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/90 backdrop-blur"
                   aria-label="Remover"
                 >
@@ -148,18 +191,62 @@ export default function VirtualTryOn() {
               </>
             )}
 
-            {/* Sobreposição do óculos (placeholder posicional para IA) */}
+            {/* Sobreposição do óculos — arraste para posicionar, use os
+                controles abaixo para ajustar o tamanho no rosto. */}
             {mode !== "idle" && (
               <img
                 src={selected.tryOnImage ?? selected.images[0].url}
                 alt={selected.name}
-                className="pointer-events-none absolute left-1/2 top-[38%] w-1/2 -translate-x-1/2 -translate-y-1/2 mix-blend-multiply opacity-90 drop-shadow-xl"
+                draggable={false}
+                onPointerDown={handleOverlayPointerDown}
+                onPointerMove={handleOverlayPointerMove}
+                onPointerUp={handleOverlayPointerUp}
+                onPointerCancel={handleOverlayPointerUp}
+                style={{
+                  transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px)) scale(${scale})`,
+                }}
+                className="absolute left-1/2 top-[38%] w-1/2 cursor-grab touch-none select-none mix-blend-multiply opacity-90 drop-shadow-xl active:cursor-grabbing"
               />
             )}
 
             <span className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-ink/80 px-3 py-1.5 text-[10px] uppercase tracking-widest text-white">
               <span className="size-1.5 animate-pulse rounded-full bg-cta" /> IA Preview
             </span>
+
+            {/* Controles de tamanho e posição do óculos */}
+            {mode !== "idle" && (
+              <div className="absolute inset-x-0 bottom-4 flex justify-center">
+                <div className="flex items-center gap-1 rounded-full bg-white/90 px-2 py-1.5 shadow-card backdrop-blur">
+                  <button
+                    onClick={() => setScale((s) => clampScale(s - SCALE_STEP))}
+                    disabled={scale <= MIN_SCALE}
+                    aria-label="Diminuir óculos"
+                    className="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-muted disabled:opacity-30"
+                  >
+                    <Minus className="size-4" />
+                  </button>
+                  <span className="w-11 text-center text-xs font-medium tabular-nums text-ink">
+                    {Math.round(scale * 100)}%
+                  </span>
+                  <button
+                    onClick={() => setScale((s) => clampScale(s + SCALE_STEP))}
+                    disabled={scale >= MAX_SCALE}
+                    aria-label="Aumentar óculos"
+                    className="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-muted disabled:opacity-30"
+                  >
+                    <Plus className="size-4" />
+                  </button>
+                  <span className="mx-1 h-5 w-px bg-border" />
+                  <button
+                    onClick={resetAdjustment}
+                    aria-label="Redefinir ajuste"
+                    className="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-muted"
+                  >
+                    <RotateCcw className="size-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Seletor de modelos */}
